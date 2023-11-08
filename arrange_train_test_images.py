@@ -22,7 +22,7 @@ for font in fonts:
     os.makedirs(font_train_dir, exist_ok=True)
     os.makedirs(font_test_dir, exist_ok=True)
 
-    font_files = [f for f in os.listdir(GEN_IMAGES_DIR) if f.startswith(font)]
+    font_files = [f for f in os.listdir(GEN_IMAGES_DIR) if f.startswith(font + "_")]
     random.shuffle(font_files)
 
     train_files = font_files[:int(0.8 * len(font_files))]

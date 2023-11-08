@@ -77,7 +77,6 @@ def validate(model, data_loader, criterion):
 
 print(image_datasets['train'].classes)
 
-
 # Training loop with progress bar for epochs
 num_epochs = 10  # Replace with the number of epochs you'd like to train for
 for epoch in range(num_epochs):
