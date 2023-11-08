@@ -14,7 +14,7 @@ data_dir = './train_test_images'
 # Transformations for the image data
 data_transforms = transforms.Compose([
     transforms.Grayscale(num_output_channels=3), # Convert images to grayscale with 3 channels
-    transforms.Resize((224, 224)), # Resize images to the expected input size of the model
+    transforms.RandomCrop((224, 224)), # Resize images to the expected input size of the model
     transforms.ToTensor(), # Convert images to PyTorch tensors
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Normalize with ImageNet stats
 ])
@@ -44,9 +44,6 @@ criterion = torch.nn.CrossEntropyLoss()
 # Define loss function and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters())
-
-# Number of epochs to train for
-num_epochs = 25
 
 # Function to perform a training step with progress bar
 def train_step(model, data_loader, criterion, optimizer):
@@ -81,8 +78,12 @@ def validate(model, data_loader, criterion):
     progress_bar.close()
     return total_loss / len(data_loader), correct / len(data_loader.dataset)
 
+
+print(image_datasets['train'].classes)
+
+
 # Training loop with progress bar for epochs
-num_epochs = 25  # Replace with the number of epochs you'd like to train for
+num_epochs = 10  # Replace with the number of epochs you'd like to train for
 for epoch in range(num_epochs):
     print(f"Epoch {epoch+1}/{num_epochs}")
     train_loss = train_step(model, dataloaders["train"], criterion, optimizer)

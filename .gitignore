@@ -1,3 +1,4 @@
 font_images
 train_test_images
 .DS_Store
+.ipynb_checkpoints/visualize-checkpoint.ipynb
