@@ -29,10 +29,10 @@ for font in fonts:
     train_files = font_files[:int(0.8 * len(font_files))]
     test_files = font_files[int(0.8 * len(font_files)):]
 
-    # Moving training files
+    # Move training files
     for train_file in train_files:
         shutil.move(os.path.join(source_dir, train_file), font_train_dir)
 
-    # Moving test files
+    # Move test files
     for test_file in test_files:
         shutil.move(os.path.join(source_dir, test_file), font_test_dir)

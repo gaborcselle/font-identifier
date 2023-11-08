@@ -7,6 +7,8 @@ import nltk
 from nltk.corpus import brown
 import random
 
+IMAGES_PER_FONT = 50
+
 # Download the necessary data from nltk
 nltk.download('brown')
 
@@ -55,7 +57,7 @@ for font_dir in font_dirs:
 
             # Counter for the image filename
             j = 0
-            for i in range(10):  # Generate 50 images per font - reduced to 10 for now to make things faster
+            for i in range(IMAGES_PER_FONT):  # Generate 50 images per font - reduced to 10 for now to make things faster
                 prose_sample = random_prose_text(all_brown_words)
 
                 for text in [prose_sample]:
