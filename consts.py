@@ -30,3 +30,5 @@ GEN_IMAGES_DIR = './generated_images'
 TRAIN_TEST_IMAGES_DIR = './train_test_images'
 # where to grab the font files from
 FONT_FILE_DIRS = ['/System/Library/Fonts/', '/System/Library/Fonts/Supplemental/']
+# where to grab the Google Fonts, all of which are allowed
+GOOGLE_FONTS_DIR =  "./google_fonts"
