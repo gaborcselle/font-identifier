@@ -3,6 +3,7 @@ import os
 import time
 import torch
 import torch.optim as optim
+import torch.nn as nn
 from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms
 from tqdm import tqdm
@@ -10,113 +11,80 @@ from tqdm import tqdm
 # Directory with organized font images
 data_dir = './train_test_images'
 
-# Define transformations for the image data
-data_transforms = {
-    'train': transforms.Compose([
-        transforms.Resize((224, 224)),  # Resize to the input size expected by the model
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])  # ImageNet standards
-    ]),
-    'test': transforms.Compose([
-        transforms.Resize((224, 224)),  # Resize to the input size expected by the model
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-}
-
+# Transformations for the image data
+data_transforms = transforms.Compose([
+   s transforms.Grayscale(num_output_channels=3), # Convert images to grayscale with 3 channels
+    transforms.Resize((224, 224)), # Resize images to the expected input size of the model
+    transforms.ToTensor(), # Convert images to PyTorch tensors
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Normalize with ImageNet stats
+])
 
 # Create datasets
 image_datasets = {
-    x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
+    x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms)
     for x in ['train', 'test']
 }
 
 # Create dataloaders
 dataloaders = {
-    'train': torch.utils.data.DataLoader(image_datasets['train'], batch_size=4),
-    'test': torch.utils.data.DataLoader(image_datasets['test'], batch_size=4)
+    'train': torch.utils.data.DataLoader(image_datasets['train'], batch_size=4, shuffle=True),
+    'test': torch.utils.data.DataLoader(image_datasets['test'], batch_size=4, shuffle=True)
 }
 
 # Define the model
 model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 
+# Modify the last fully connected layer to match the number of font classes you have
+num_classes = len(image_datasets['train'].classes)
+model.fc = nn.Linear(model.fc.in_features, num_classes)
+
 # Define the loss function
 criterion = torch.nn.CrossEntropyLoss()
 
-# Optimizer (you can replace 'model.parameters()' with specific parameters to optimize if needed)
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-
-# Decay LR by a factor of 0.1 every 7 epochs
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+# Define loss function and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters())
 
 # Number of epochs to train for
 num_epochs = 25
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
-    since = time.time()
+# Function to perform a training step with progress bar
+def train_step(model, data_loader, criterion, optimizer):
+    model.train()
+    total_loss = 0
+    progress_bar = tqdm(data_loader, desc='Training', leave=True)
+    for inputs, targets in progress_bar:
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+        progress_bar.set_postfix(loss=loss.item())
+    progress_bar.close()
+    return total_loss / len(data_loader)
 
-    best_model_wts = copy.deepcopy(model.state_dict())
-    best_acc = 0.0
+# Function to perform a validation step with progress bar
+def validate(model, data_loader, criterion):
+    model.eval()
+    total_loss = 0
+    correct = 0
+    progress_bar = tqdm(data_loader, desc='Validation', leave=False)
+    with torch.no_grad():
+        for inputs, targets in progress_bar:
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
+            total_loss += loss.item()
+            _, predicted = torch.max(outputs, 1)
+            correct += (predicted == targets).sum().item()
+            progress_bar.set_postfix(loss=loss.item())
+    progress_bar.close()
+    return total_loss / len(data_loader), correct / len(data_loader.dataset)
 
-    for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
-        print('-' * 10)
-
-        # Each epoch has a training and validation phase
-        for phase in ['train', 'test']:
-            if phase == 'train':
-                model.train()  # Set model to training mode
-            else:
-                model.eval()   # Set model to evaluate mode
-
-            running_loss = 0.0
-            running_corrects = 0
-
-            # Iterate over data.
-            # Here we wrap the dataloader with tqdm for a progress bar
-            for inputs, labels in tqdm(dataloaders[phase], desc=f"Epoch {epoch} - {phase}"):
-                # Zero the parameter gradients
-                optimizer.zero_grad()
-
-                # Forward
-                # Track history if only in train
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
-
-                    # Backward + optimize only if in training phase
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
-
-                # Statistics
-                running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
-            if phase == 'train':
-                scheduler.step()
-
-            epoch_loss = running_loss / len(image_datasets[phase])
-            epoch_acc = running_corrects.double() / len(image_datasets[phase])
-
-            print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-                phase, epoch_loss, epoch_acc))
-
-            # Deep copy the model
-            if phase == 'test' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
-
-        print()
-
-    time_elapsed = time.time() - since
-    print('Training complete in {:.0f}m {:.0f}s'.format(
-        time_elapsed // 60, time_elapsed % 60))
-    print('Best test Acc: {:4f}'.format(best_acc))
-
-    # Load best model weights
-    model.load_state_dict(best_model_wts)
-    return model
-
-# Train the model
-model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=num_epochs)
+# Training loop with progress bar for epochs
+num_epochs = 25  # Replace with the number of epochs you'd like to train for
+for epoch in range(num_epochs):
+    print(f"Epoch {epoch+1}/{num_epochs}")
+    train_loss = train_step(model, dataloaders["train"], criterion, optimizer)
+    val_loss, val_accuracy = validate(model, dataloaders["test"], criterion)
+    print(f"Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
