@@ -13,7 +13,7 @@ data_dir = './train_test_images'
 
 # Transformations for the image data
 data_transforms = transforms.Compose([
-   s transforms.Grayscale(num_output_channels=3), # Convert images to grayscale with 3 channels
+    transforms.Grayscale(num_output_channels=3), # Convert images to grayscale with 3 channels
     transforms.Resize((224, 224)), # Resize images to the expected input size of the model
     transforms.ToTensor(), # Convert images to PyTorch tensors
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Normalize with ImageNet stats
@@ -88,3 +88,6 @@ for epoch in range(num_epochs):
     train_loss = train_step(model, dataloaders["train"], criterion, optimizer)
     val_loss, val_accuracy = validate(model, dataloaders["test"], criterion)
     print(f"Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
+
+# Save the model to disk
+torch.save(model.state_dict(), 'font_identifier_model.pth')
