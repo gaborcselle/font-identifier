@@ -1,15 +1,11 @@
-import copy
 import os
-import time
 import torch
 import torch.optim as optim
 import torch.nn as nn
-from torch.optim import lr_scheduler
 from torchvision import datasets, models, transforms
 from tqdm import tqdm
-
-# Directory with organized font images
-data_dir = './train_test_images'
+import torch
+from consts import TRAIN_TEST_IMAGES_DIR
 
 # Transformations for the image data
 data_transforms = transforms.Compose([
@@ -21,7 +17,7 @@ data_transforms = transforms.Compose([
 
 # Create datasets
 image_datasets = {
-    x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms)
+    x: datasets.ImageFolder(os.path.join(TRAIN_TEST_IMAGES_DIR, x), data_transforms)
     for x in ['train', 'test']
 }
 
@@ -92,3 +88,5 @@ for epoch in range(num_epochs):
 
 # Save the model to disk
 torch.save(model.state_dict(), 'font_identifier_model.pth')
+
+

@@ -3,18 +3,17 @@
 import os
 import shutil
 import random
+from consts import TRAIN_TEST_IMAGES_DIR, GEN_IMAGES_DIR
 
-source_dir = './font_images'
-organized_dir = './train_test_images'
-train_dir = os.path.join(organized_dir, 'train')
-test_dir = os.path.join(organized_dir, 'test')
+train_dir = os.path.join(TRAIN_TEST_IMAGES_DIR, 'train')
+test_dir = os.path.join(TRAIN_TEST_IMAGES_DIR, 'test')
 
 # create directories if they don't exist
 os.makedirs(train_dir, exist_ok=True)
 os.makedirs(test_dir, exist_ok=True)
 
 # make a list of all the font names
-fonts = [f.split('_')[0] for f in os.listdir(source_dir) if f.endswith('.png')]
+fonts = [f.split('_')[0] for f in os.listdir(GEN_IMAGES_DIR) if f.endswith('.png')]
 fonts = list(set(fonts))  # getting unique font names
 
 for font in fonts:
@@ -23,7 +22,7 @@ for font in fonts:
     os.makedirs(font_train_dir, exist_ok=True)
     os.makedirs(font_test_dir, exist_ok=True)
 
-    font_files = [f for f in os.listdir(source_dir) if f.startswith(font)]
+    font_files = [f for f in os.listdir(GEN_IMAGES_DIR) if f.startswith(font)]
     random.shuffle(font_files)
 
     train_files = font_files[:int(0.8 * len(font_files))]
@@ -31,8 +30,8 @@ for font in fonts:
 
     # Move training files
     for train_file in train_files:
-        shutil.move(os.path.join(source_dir, train_file), font_train_dir)
+        shutil.move(os.path.join(GEN_IMAGES_DIR, train_file), font_train_dir)
 
     # Move test files
     for test_file in test_files:
-        shutil.move(os.path.join(source_dir, test_file), font_test_dir)
+        shutil.move(os.path.join(GEN_IMAGES_DIR, test_file), font_test_dir)

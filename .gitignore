@@ -1,5 +1,7 @@
-font_images
+generated_images
 train_test_images
 .DS_Store
 .ipynb_checkpoints/visualize-checkpoint.ipynb
 font_identifier_model.pth
+*.pyc
+__pycache__
