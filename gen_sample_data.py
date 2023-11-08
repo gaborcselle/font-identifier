@@ -10,9 +10,6 @@ import random
 # Download the necessary data from nltk
 nltk.download('brown')
 
-# Sample text for prose and code
-prose_text = " ".join(brown.words(categories='news')[:50]) # First 50 words from news category
-
 # Note that this will only work on MacOS where this is the default font directory
 font_dirs = ['/System/Library/Fonts/', '/System/Library/Fonts/Supplemental/']
 output_dir = './font_images'
@@ -24,17 +21,17 @@ all_brown_words = sorted(set(brown.words(categories='news')))
 FONT_ALLOWLIST = ["Arial", "Avenir", "Courier", "Helvetica", "Georgia", "Tahoma", "Times New Roman", "Verdana"]
 
 def wrap_text(text, line_length=10):
-    """
-    Wraps the provided text every 'line_length' words.
-    """
+    """Wraps the provided text every 'line_length' words."""
     words = text.split()
     return "\n".join([" ".join(words[i:i+line_length]) for i in range(0, len(words), line_length)])
 
-def random_prose_text(words, num_words=200):  # Sample random words
+def random_prose_text(words, num_words=200):
+    """Returns a random selection of 'num_words' words from the provided list of words."""
     random_words = " ".join(random.sample(words, num_words))
     return wrap_text(random_words)
 
-def random_code_text(base_code, num_lines=15):  # Increase number of lines
+def random_code_text(base_code, num_lines=15):
+    """Returns a random selection of 'num_lines' lines from the provided code."""
     lines = base_code.split("\n")
     return "\n".join(random.sample(lines, min(num_lines, len(lines))))
 
