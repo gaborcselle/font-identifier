@@ -49,19 +49,20 @@ def main():
         # Output the font name so we can see the progress
         print(font_path, font_name)
 
-        # Random font size
-        font_size = random.choice(range(18, 72))
-
-        if font_path.endswith('.ttc'):
-            # ttc fonts have multiple fonts in one file, so we need to specify which one we want
-            font = ImageFont.truetype(font_path, font_size, index=0)
-        else:
-            # ttf fonts have only one font in the file
-            font = ImageFont.truetype(font_path, font_size)
 
         # Counter for the image filename
         j = 0
         for i in range(IMAGES_PER_FONT):  # Generate 50 images per font - reduced to 10 for now to make things faster
+            # Random font size
+            font_size = random.choice(range(18, 72))
+
+            if font_path.endswith('.ttc'):
+                # ttc fonts have multiple fonts in one file, so we need to specify which one we want
+                font = ImageFont.truetype(font_path, font_size, index=0)
+            else:
+                # ttf fonts have only one font in the file
+                font = ImageFont.truetype(font_path, font_size)
+
             # Determine the number of words that will fit on a line
             font_avg_char_width = font.getbbox('x')[2]
             words_per_line = int(800 / (font_avg_char_width*5))
