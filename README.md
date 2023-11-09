@@ -14,3 +14,12 @@ Arrange test images into test and train: [arrange_train_test_images.py](arrange_
 Train a ResNet18 on the data: [train_font_identifier.py](train_font_identifier.py)
 
 License: MIT
+
+
+---
+language:
+- en
+tags:
+- font-identification
+license: mit
+---
