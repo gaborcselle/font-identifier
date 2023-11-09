@@ -1,3 +1,11 @@
+---
+language:
+- en
+tags:
+- font-identification
+license: mit
+---
+
 # Font Identifier Project
 
 Tinker project, Nov 8, 2023.
@@ -16,10 +24,3 @@ Train a ResNet18 on the data: [train_font_identifier.py](train_font_identifier.p
 License: MIT
 
 
----
-language:
-- en
-tags:
-- font-identification
-license: mit
----
