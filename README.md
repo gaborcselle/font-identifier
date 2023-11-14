@@ -2,6 +2,8 @@
 
 Nov 8-14, 2023
 
+Visual classifier to identify the font used in an image.
+
 Steps:
 1. Generate sample images (note this will work only on Mac): [gen_sample_data.py](gen_sample_data.py)
 2. Arrange test images into test and train: [arrange_train_test_images.py](arrange_train_test_images.py)
