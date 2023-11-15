@@ -78,7 +78,7 @@ def validate(model, data_loader, criterion):
 print(image_datasets['train'].classes)
 
 # Training loop with progress bar for epochs
-num_epochs = 10  # Replace with the number of epochs you'd like to train for
+num_epochs = 20  # Replace with the number of epochs you'd like to train for
 for epoch in range(num_epochs):
     print(f"Epoch {epoch+1}/{num_epochs}")
     train_loss = train_step(model, dataloaders["train"], criterion, optimizer)
