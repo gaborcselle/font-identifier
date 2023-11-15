@@ -1,3 +1,6 @@
+# Train a model with Hugging Face
+# Upload it to the model hub
+
 import numpy as np
 from datasets import load_dataset, Image
 from transformers import AutoImageProcessor, ResNetForImageClassification, Trainer, TrainingArguments
@@ -32,7 +35,6 @@ labels = dataset['train'].features['label'].names
 model = ResNetForImageClassification.from_pretrained("microsoft/resnet-18", num_labels=num_classes, ignore_mismatched_sizes=True)
 image_processor = AutoImageProcessor.from_pretrained("microsoft/resnet-18")
 
-
 print("Fonts list to identify:", labels)
 from datasets import load_dataset
 
@@ -48,6 +50,9 @@ for i, label in enumerate(labels):
     label2id[label] = str(i)
     id2label[str(i)] = label
 
+model.config.id2label = id2label
+model.config.label2id = label2id
+
 training_args = TrainingArguments(
     output_dir="font-identifier",
     overwrite_output_dir=True,
@@ -58,7 +63,7 @@ training_args = TrainingArguments(
     per_device_train_batch_size=16,
     gradient_accumulation_steps=4,
     per_device_eval_batch_size=16,
-    num_train_epochs=20,
+    num_train_epochs=50,
     warmup_ratio=0.1,
     logging_steps=10,
     load_best_model_at_end=True,
@@ -76,6 +81,8 @@ trainer = Trainer(
 
 trainer.train()
 
+# save model to disk
+trainer.save_model("font-identifier")
+
 # upload to hub
 trainer.push_to_hub("font-identifier")
-
