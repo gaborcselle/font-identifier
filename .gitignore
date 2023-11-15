@@ -1,8 +1,9 @@
 generated_images
-train_test_images
+font_examples
 .DS_Store
 .ipynb_checkpoints/visualize-checkpoint.ipynb
 font_identifier_model.pth
 *.pyc
 __pycache__
 google_fonts
+font-identifier
