@@ -4,7 +4,9 @@ Nov 8-14, 2023
 
 Visual classifier to identify the font used in an image.
 
-You can try it on HuggingFace at [gaborcselle/font-identifier](https://huggingface.co/gaborcselle/font-identifier)
+You can try it on HuggingFace at [gaborcselle/font-identifier](https://huggingface.co/gaborcselle/font-identifier).
+
+The dataset used is on HuggingFace at [datasets/gaborcselle/font-examples](https://huggingface.co/datasets/gaborcselle/font-examples).
 
 # Key learnings
 
